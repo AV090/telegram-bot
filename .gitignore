@@ -5,3 +5,4 @@ second.py
 __pycache__/
 .idea/
 .DS_Store
+config.py
