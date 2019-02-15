@@ -1,0 +1,7 @@
+dsinpython
+first.py
+second.py
+/venv/
+__pycache__/
+.idea/
+.DS_Store
