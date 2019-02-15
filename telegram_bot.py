@@ -3,8 +3,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 import requests
 import cricket_api_parser
 import logging
-from telegram.error import (TelegramError, Unauthorized, BadRequest,
-                            TimedOut, ChatMigrated, NetworkError)
+import config
 
 
 def error_cb(bot, update, error):
@@ -97,7 +96,7 @@ def callback_handler(bot, update):
 
 
 def main():
-    updater = Updater('639227305:AAG-cDk5kGGaun6BohT4Up5K1Gc8oTGpX10')
+    updater = Updater(config.telegram_key)
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO)
