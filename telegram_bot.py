@@ -72,7 +72,6 @@ def cricket_new_match_handler(bot, update):
 
 
 def records_handler(bot, update, args):
-
     bot.send_message(text="Thank-you for the request. We are working on it", chat_id=update.message.chat_id)
     return
 
