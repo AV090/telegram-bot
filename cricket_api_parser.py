@@ -19,17 +19,17 @@ labels_dict = {"tests": "Tests", }
 
 
 def fetch(ops, args=""):
-    print(ops, args)
+
     if ops in _cric_ops:
         action = _cric_ops[ops]
-        print(action)
+
         data = requests.get(action + args).json()
 
         if ops == 'search':
             data = data.get('data', None)
             return search(data)
         elif ops == 'newmatch':
-            print("data => ", data)
+
             return newmatch(data)
     return None
 
@@ -98,7 +98,7 @@ def newmatch(data):
 
 
 def callback_handler_records(pid):
-    print("pid is => ", pid)
+
     try:
 
         data = requests.get(_cric_ops.get('records') + pid).json()
@@ -117,27 +117,27 @@ def callback_handler_records(pid):
 
             msg += "\nProfile Pic:\n" + "<a href='" + img + "'>&nbsp;</a>"
 
-            print(msg, " = msg")
+
             return dict(text=msg, parse_mode='HTML')
         else:
             raise Exception()
     except Exception as ex:
-        print('Exception=> ', ex)
+
         return dict(text="Cannot process your request now")
 
 
 def callback_handler_match(match_id):
-    print("Match id is =>", match_id)
+
 
     try:
         if match_id:
             data = requests.get(_cric_ops['match'] + match_id).json()
-            print(data)
+
             _score = data.get('score',"No Data")
             return dict(text=_score, parse_mode='HTML')
         return dict(text="No details of this match found :(")
     except Exception as ex:
-        print('Exceptions is => ', ex)
+
         return dict(text="Cannot process request now")
 
 
