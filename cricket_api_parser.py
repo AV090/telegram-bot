@@ -1,5 +1,8 @@
 import requests
-from telegram import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from bot_logger import create_logger
+
+logger = create_logger(__name__)
 
 _domain = "https://cricapi.com/api/"
 
@@ -19,7 +22,6 @@ labels_dict = {"tests": "Tests", }
 
 
 def fetch(ops, args=""):
-
     if ops in _cric_ops:
         action = _cric_ops[ops]
 
@@ -64,6 +66,7 @@ def search(data):
 
 
 def newmatch(data):
+    logger.info(f"Entering newmatch method in {__name__}")
     if data is not None:
         matches = data.get('matches', None)
         if matches is not None:
@@ -98,7 +101,6 @@ def newmatch(data):
 
 
 def callback_handler_records(pid):
-
     try:
 
         data = requests.get(_cric_ops.get('records') + pid).json()
@@ -117,7 +119,6 @@ def callback_handler_records(pid):
 
             msg += "\nProfile Pic:\n" + "<a href='" + img + "'>&nbsp;</a>"
 
-
             return dict(text=msg, parse_mode='HTML')
         else:
             raise Exception()
@@ -127,13 +128,11 @@ def callback_handler_records(pid):
 
 
 def callback_handler_match(match_id):
-
-
     try:
         if match_id:
             data = requests.get(_cric_ops['match'] + match_id).json()
 
-            _score = data.get('score',"No Data")
+            _score = data.get('score', "No Data")
             return dict(text=_score, parse_mode='HTML')
         return dict(text="No details of this match found :(")
     except Exception as ex:

@@ -6,3 +6,4 @@ __pycache__/
 .idea/
 .DS_Store
 config.py
+logs.log*

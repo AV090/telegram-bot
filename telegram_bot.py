@@ -2,8 +2,12 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
 import requests
 import cricket_api_parser
-import logging
+from bot_logger import create_logger
 import config
+
+
+logger = create_logger(__name__)
+
 
 
 def error_cb(bot, update, error):
@@ -21,31 +25,33 @@ def get_url():
 
 
 def cric_api_operations(ops="search", *args):
-
     data = cricket_api_parser.fetch(ops, " ".join(args[0]))
     return data
 
 
 def img_handler(bot, update):
-
     url = get_url()
     chat_id = update.message.chat_id
     bot.send_photo(chat_id=chat_id, photo=url)
 
 
 def joke_handler(bot, update):
-    chat_id = update.message.chat_id
+    try:
+        logger.info("Here in joke_handler")
+        chat_id = update.message.chat_id
 
-    content = requests.get("http://api.icndb.com/jokes/random").json()
+        content = requests.get("http://api.icndb.com/jokes/random").json()
 
-    if content is None:
+        if content is None:
 
-        bot.send_message(chat_id, "Sorry, Our services are currently down")
-    else:
+            bot.send_message(chat_id, "Sorry, Our services are currently down")
+        else:
 
-        joke = str(content['value']['id']) + "=> " + content['value']['joke']
+            joke = str(content['value']['id']) + "=> " + content['value']['joke']
 
-        bot.send_message(chat_id, joke)
+            bot.send_message(chat_id, joke)
+    except Exception as ex:
+        print("Exception  occured is => ", ex)
 
 
 def cricket_player_search_handler(bot, update, args):
@@ -59,7 +65,6 @@ def cricket_player_search_handler(bot, update, args):
 
 
 def cricket_new_match_handler(bot, update):
-
     data = cricket_api_parser.fetch('newmatch')
     if data and type(data) == list:
         for item in data:
@@ -86,19 +91,16 @@ def callback_handler(bot, update):
     elif data.startswith("match"):
         reply = cricket_api_parser.callback_handler_match(args[1])
 
-
     reply['chat_id'] = chat_id
 
     bot.send_message(**reply)
-    bot.answer_callback_query(update.callback_query.id,show_alert=True)
+    bot.answer_callback_query(update.callback_query.id, show_alert=True)
     return
 
 
 def main():
     updater = Updater(config.telegram_key)
-    logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level=logging.INFO)
+
     dp = updater.dispatcher
     dp.add_error_handler(error_cb)
     dp.add_handler(CommandHandler('img', img_handler))
