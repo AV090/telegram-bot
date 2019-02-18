@@ -1,22 +1,24 @@
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
+from telegram import ChatAction
+
 import requests
 import cricket_api_parser
 from bot_logger import create_logger
 import config
 
+from decorator_factory import decorate
 
 logger = create_logger(__name__)
 
 
-
 def error_cb(bot, update, error):
-    print(error)
+    logger.error(f"Error occured => {error}")
 
     try:
         raise error
     except Exception as ex:
-        print(ex)
+        logger.error(f"Exception caught => {ex}")
 
 
 def get_url():
@@ -29,6 +31,7 @@ def cric_api_operations(ops="search", *args):
     return data
 
 
+@decorate(action_type=ChatAction.UPLOAD_PHOTO)
 def img_handler(bot, update):
     url = get_url()
     chat_id = update.message.chat_id
@@ -51,7 +54,7 @@ def joke_handler(bot, update):
 
             bot.send_message(chat_id, joke)
     except Exception as ex:
-        print("Exception  occured is => ", ex)
+        logger.error(msg=f"Exception  occured is => {ex}")
 
 
 def cricket_player_search_handler(bot, update, args):
@@ -64,6 +67,7 @@ def cricket_player_search_handler(bot, update, args):
     return
 
 
+@decorate(action_type=ChatAction.TYPING)
 def cricket_new_match_handler(bot, update):
     data = cricket_api_parser.fetch('newmatch')
     if data and type(data) == list:
@@ -84,8 +88,9 @@ def records_handler(bot, update, args):
 def callback_handler(bot, update):
     data = update.callback_query.data
     args = data.split(" ")
-    chat_id = update.callback_query.message.chat.id
+    chat_id = update.effective_message.chat_id
     reply = "We recieved your message."
+
     if data.startswith("record"):
         reply = cricket_api_parser.callback_handler_records(args[1])
     elif data.startswith("match"):
@@ -94,7 +99,6 @@ def callback_handler(bot, update):
     reply['chat_id'] = chat_id
 
     bot.send_message(**reply)
-    bot.answer_callback_query(update.callback_query.id, show_alert=True)
     return
 
 
