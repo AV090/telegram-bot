@@ -10,7 +10,7 @@ logger = create_logger(__name__)
 
 _domain = "https://cricapi.com/api/"
 
-_cricket_api_key = "gWR4ToyufWReDZVkVG0fA6wpzbt1"
+_cricket_api_key = ""
 
 _player_id = "35320"
 
